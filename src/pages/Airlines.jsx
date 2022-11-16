@@ -12,7 +12,6 @@ function Airlines() {
     const getAirlines = async () => {
       const airlinesData = await axios.get("http://localhost:8080/airlines");
       const airlines = airlinesData.data;
-      console.log(airlines);
 
       if (airlines !== null) {
         setAirlines(airlines);
@@ -30,7 +29,7 @@ function Airlines() {
   }
 
   return (
-    <>
+    <div className="pageContainer">
       <br />
       <Table striped>
         <thead>
@@ -58,7 +57,7 @@ function Airlines() {
           })}
         </tbody>
       </Table>
-    </>
+    </div>
   );
 }
 

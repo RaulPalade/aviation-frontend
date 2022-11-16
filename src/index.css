@@ -20,9 +20,9 @@ body {
   background-color: var(--esmerald);
 }
 
-.nav-link {
+/* .nav-link {
   color: white !important;
-}
+} */
 
 .active {
   font-weight: bold !important;
