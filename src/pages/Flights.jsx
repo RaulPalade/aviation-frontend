@@ -22,6 +22,8 @@ function Flights() {
     );
     const flights = flightsData.data;
 
+    console.log(flights);
+
     flights.forEach((flight) => {
       let depTime = new Date(flight.departureTime);
       let arrTime = new Date(flight.arrivalTime);
