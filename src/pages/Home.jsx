@@ -4,7 +4,6 @@ import AirplaneImg from "../assets/airplane.jpg";
 import AirlineImg from "../assets/airline.jpg";
 import AirportImg from "../assets/airport.jpg";
 import FlightImg from "../assets/flight.jpg";
-
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
