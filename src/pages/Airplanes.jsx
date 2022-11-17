@@ -10,7 +10,6 @@ function Airplanes() {
   const [airplanes, setAirplanes] = useState(null);
   const [constructors, setConstructors] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [key, setKey] = useState("");
 
   useEffect(() => {
     const getAirplanes = async () => {
@@ -28,7 +27,6 @@ function Airplanes() {
         setConstructors(constructors);
         setAirplanes(airplanes);
         setLoading(false);
-        setKey(constructors[0]);
       } else {
         toast.error("Impossible to get airplanes");
       }
@@ -43,11 +41,7 @@ function Airplanes() {
 
   return (
     <div className="pageContainer">
-      <Tabs
-        id="controlled-tab-example"
-        className="mb-3 text-dark"
-        activeKey={key}
-        onSelect={(k) => setKey(k)}>
+      <Tabs id="controlled-tab-example" className="mb-3 text-dark">
         {constructors?.map((constructor) => {
           return (
             <Tab eventKey={constructor} title={constructor}>
@@ -60,7 +54,7 @@ function Airplanes() {
                 </thead>
 
                 <tbody>
-                  {airplanes?.map((airplane, index) => {
+                  {airplanes?.map((airplane) => {
                     const { idAirplane, model, seats } = airplane;
                     return (
                       constructor === airplane.constructor && (
