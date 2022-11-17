@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 function Airports() {
   // eslint-disable-next-line
@@ -11,6 +15,8 @@ function Airports() {
   const [stateSelectedAirports, setStateSelectedAirports] = useState(null);
   const [states, setStates] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getAirports = async () => {
@@ -95,6 +101,12 @@ function Airports() {
           })}
         </tbody>
       </Table>
+      <Button
+        variant="primary"
+        className="btn-circle btn-xl float-end mt-2"
+        onClick={() => navigate("/addAirport")}>
+        <FontAwesomeIcon icon={faPlus} />
+      </Button>
     </div>
   );
 }

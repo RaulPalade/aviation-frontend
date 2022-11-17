@@ -1,14 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Table from "react-bootstrap/Table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 function Flights() {
   const [flights, setFlights] = useState(null);
   const [formData, setFormData] = useState({ from: "", to: "" });
   const { from, to } = formData;
+
+  const navigate = useNavigate();
 
   const searchFlights = async (e) => {
     e.preventDefault();
@@ -121,6 +126,12 @@ function Flights() {
           })}
         </tbody>
       </Table>
+      <Button
+        variant="primary"
+        className="btn-circle btn-xl float-end mt-2"
+        onClick={() => navigate("/addFlight")}>
+        <FontAwesomeIcon icon={faPlus} />
+      </Button>
     </div>
   );
 }
