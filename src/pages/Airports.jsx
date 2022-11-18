@@ -7,13 +7,14 @@ import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash, faFilePen } from "@fortawesome/free-solid-svg-icons";
 
 function Airports() {
   // eslint-disable-next-line
   const [airports, setAirports] = useState(null);
   const [stateSelectedAirports, setStateSelectedAirports] = useState(null);
   const [states, setStates] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ function Airports() {
         });
 
         setStates(states);
+        setSelectedState(states[0]);
         setAirports(airports);
         setLoading(false);
         getAirportByState(states[0]);
@@ -44,6 +46,7 @@ function Airports() {
   }, []);
 
   const getAirportByState = async (state) => {
+    setSelectedState(state);
     const airportsByStateData = await axios.get(
       `http://localhost:8080/airports?state=${state}`
     );
@@ -56,6 +59,34 @@ function Airports() {
     }
   };
 
+  const onDelete = async (iatacode) => {
+    console.log(iatacode);
+    try {
+      await axios.delete(`http://localhost:8080/airports/${iatacode}`);
+
+      const updatedAirports = airports.filter(
+        (airport) => airport.iatacode !== iatacode
+      );
+
+      let found = false;
+      updatedAirports.forEach((airport) => {
+        if (airport.state === selectedState) {
+          found = true;
+        }
+      });
+
+      if (!found) {
+        const updatedStates = states.filter((state) => state !== selectedState);
+        setStates(updatedStates);
+      }
+
+      setAirports(updatedAirports);
+      toast.success("Airport deleted");
+    } catch (error) {
+      toast.error("Impossible to delete");
+    }
+  };
+
   if (loading) {
     return <Spinner />;
   }
@@ -65,7 +96,6 @@ function Airports() {
       Select the country to view airports:
       <Form.Control
         as="select"
-        custom
         onChange={(event) => getAirportByState(event.target.value)}>
         {states?.map((state, index) => {
           return (
@@ -84,6 +114,7 @@ function Airports() {
             <th>City</th>
             <th>Name</th>
             <th>Runways</th>
+            <th></th>
           </tr>
         </thead>
 
@@ -96,6 +127,21 @@ function Airports() {
                 <td>{city}</td>
                 <td>{name}</td>
                 <td>{runways}</td>
+                <td>
+                  <Button
+                    variant="success"
+                    title="Edit"
+                    onClick={() => navigate(`/editAirport/${iatacode}`)}>
+                    <FontAwesomeIcon icon={faFilePen} />
+                  </Button>
+                  &nbsp;
+                  <Button
+                    variant="danger"
+                    title="Delete"
+                    onClick={() => onDelete(iatacode)}>
+                    <FontAwesomeIcon icon={faTrash} />
+                  </Button>
+                </td>
               </tr>
             );
           })}
