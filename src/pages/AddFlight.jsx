@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import Spinner from "../components/Spinner";
 
 function AddFlight() {
@@ -18,13 +18,16 @@ function AddFlight() {
     passengers: 0,
     duration: "",
   });
-  const { flightNumber, departureTime, arrivalTime, passengers, duration } =
-    formData;
+  const { flightNumber, passengers, duration } = formData;
 
   const [airports, setAirports] = useState(null);
   const [airlines, setAirlines] = useState(null);
   const [airplanes, setAirplanes] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [depDate, setDepDate] = useState("");
+  const [depTime, setDepTime] = useState("");
+  const [arrDate, setArrDate] = useState("");
+  const [arrTime, setArrTime] = useState("");
 
   const navigate = useNavigate();
 
@@ -88,23 +91,22 @@ function AddFlight() {
 
   const addFlight = async (e) => {
     e.preventDefault();
-    console.log(formData);
 
-    // try {
-    //   const response = await axios.post(
-    //     "http://localhost:8080/flights",
-    //     formData
-    //   );
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/flights",
+        formData
+      );
 
-    //   if (response.status === 200) {
-    //     toast.success("New flight added");
-    //     setTimeout(() => {
-    //       navigate("/flights");
-    //     }, 2000);
-    //   }
-    // } catch (error) {
-    //   toast.error("Impossible to add a new flight");
-    // }
+      if (response.status === 200) {
+        toast.success("New flight added");
+        setTimeout(() => {
+          navigate("/flights");
+        }, 2000);
+      }
+    } catch (error) {
+      toast.error("Impossible to add a new flight");
+    }
   };
 
   const onChangeFlightNumber = (e) => {
@@ -128,20 +130,6 @@ function AddFlight() {
     }));
   };
 
-  const onChangeDepartureTime = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      departureTime: e.target.value,
-    }));
-  };
-
-  const onChangeArrivalTime = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      arrivalTime: e.target.value,
-    }));
-  };
-
   const onChangeAirline = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -159,14 +147,14 @@ function AddFlight() {
   const onChangePassengers = (e) => {
     setFormData((prevState) => ({
       ...prevState,
-      passengers: e.target.value,
+      passengers: parseInt(e.target.value),
     }));
   };
 
   const onChangeDuration = (e) => {
     setFormData((prevState) => ({
       ...prevState,
-      duration: e.target.value,
+      duration: e.target.value + ":00",
     }));
   };
 
@@ -189,7 +177,7 @@ function AddFlight() {
 
         <Form.Group className="mb-3">
           <Form.Label>Departure Airport</Form.Label>
-          <Form.Control as="select" custom onChange={onChangeDepartureAirport}>
+          <Form.Control as="select" onChange={onChangeDepartureAirport}>
             {airports?.map((airport, index) => {
               return (
                 <option key={index} value={airport.iatacode}>
@@ -202,7 +190,7 @@ function AddFlight() {
 
         <Form.Group className="mb-3">
           <Form.Label>Arrival Airport</Form.Label>
-          <Form.Control as="select" custom onChange={onChangeArrivalAirport}>
+          <Form.Control as="select" onChange={onChangeArrivalAirport}>
             {airports?.map((airport, index) => {
               return (
                 <option key={index} value={airport.iatacode}>
@@ -214,11 +202,48 @@ function AddFlight() {
         </Form.Group>
 
         <Form.Group className="mb-3">
+          <Form.Label>Departure Date</Form.Label>
+          <Form.Control
+            type="date"
+            name="datepic"
+            value={depDate}
+            onChange={(e) => {
+              setDepDate(e.target.value);
+              setFormData((prevState) => ({
+                ...prevState,
+                departureTime: e.target.value + "T" + depTime + ":00.000+00:00",
+              }));
+            }}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
           <Form.Label>Departure time</Form.Label>
           <Form.Control
-            type="text"
-            value={departureTime}
-            onChange={onChangeDepartureTime}
+            type="time"
+            value={depTime}
+            onChange={(e) => {
+              setDepTime(e.target.value);
+              setFormData((prevState) => ({
+                ...prevState,
+                departureTime: depDate + "T" + e.target.value + ":00.000+00:00",
+              }));
+            }}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Arrival Date</Form.Label>
+          <Form.Control
+            type="date"
+            value={arrDate}
+            onChange={(e) => {
+              setArrDate(e.target.value);
+              setFormData((prevState) => ({
+                ...prevState,
+                arrivalTime: e.target.value + "T" + arrTime + ":00.000+00:00",
+              }));
+            }}
             required
           />
         </Form.Group>
@@ -226,16 +251,21 @@ function AddFlight() {
         <Form.Group className="mb-3">
           <Form.Label>Arrival time</Form.Label>
           <Form.Control
-            type="text"
-            value={arrivalTime}
-            onChange={onChangeArrivalTime}
-            required
+            type="time"
+            value={arrTime}
+            onChange={(e) => {
+              setArrTime(e.target.value);
+              setFormData((prevState) => ({
+                ...prevState,
+                arrivalTime: arrDate + "T" + e.target.value + ":00.000+00:00",
+              }));
+            }}
           />
         </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label>Airline</Form.Label>
-          <Form.Control as="select" custom onChange={onChangeAirline}>
+          <Form.Control as="select" onChange={onChangeAirline}>
             {airlines?.map((airline, index) => {
               return (
                 <option key={index} value={airline.iatacode}>
@@ -248,7 +278,7 @@ function AddFlight() {
 
         <Form.Group className="mb-3">
           <Form.Label>Airplane</Form.Label>
-          <Form.Control as="select" custom onChange={onChangeAirplane}>
+          <Form.Control as="select" onChange={onChangeAirplane}>
             {airplanes?.map((airplane, index) => {
               return (
                 <option key={index} value={airplane.idAirplane}>
@@ -270,13 +300,14 @@ function AddFlight() {
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Duration</Form.Label>
-          <Form.Control
-            type="text"
-            value={duration}
-            onChange={onChangeDuration}
-            required
-          />
+          <Form.Group className="mb-3">
+            <Form.Label>Duration</Form.Label>
+            <Form.Control
+              type="time"
+              value={duration}
+              onChange={onChangeDuration}
+            />
+          </Form.Group>
         </Form.Group>
         <Button variant="primary" type="submit">
           Add Flight
