@@ -5,7 +5,7 @@ function HomeCard({ image, title }) {
     <Card className="bg-dark text-dark">
       <Card.Img src={image} alt="Card image" />
       <Card.ImgOverlay>
-        <Card.Title class="cardTitle">{title}</Card.Title>
+        <Card.Title className="cardTitle">{title}</Card.Title>
       </Card.ImgOverlay>
     </Card>
   );
