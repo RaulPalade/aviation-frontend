@@ -7,7 +7,6 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
 function EditAirport() {
-  const [airport, setAirport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     iatacode: "",
@@ -29,7 +28,6 @@ function EditAirport() {
         );
         const airport = airportData.data;
 
-        setAirport(airport);
         setFormData(airport);
         setLoading(false);
       } catch (error) {

@@ -8,7 +8,7 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Button from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash, faFilePen } from "@fortawesome/free-solid-svg-icons";
 
 function Airplanes() {
   const [airplanes, setAirplanes] = useState(null);
@@ -32,7 +32,9 @@ function Airplanes() {
 
         setConstructors(constructors);
         setAirplanes(airplanes);
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
       } else {
         toast.error("Impossible to get airplanes");
       }
@@ -40,6 +42,22 @@ function Airplanes() {
 
     getAirplanes();
   }, []);
+
+  const onDelete = async (idAirplane) => {
+    console.log(idAirplane);
+    try {
+      await axios.delete(`http://localhost:8080/airplanes/${idAirplane}`);
+
+      const updateAirplanes = airplanes.filter(
+        (airplane) => airplane.idAirplane !== idAirplane
+      );
+
+      setAirplanes(updateAirplanes);
+      toast.success("Airplane deleted");
+    } catch (error) {
+      toast.error("Impossible to delete");
+    }
+  };
 
   if (loading) {
     return <Spinner />;
@@ -56,6 +74,7 @@ function Airplanes() {
                   <tr>
                     <th>Model</th>
                     <th>Seats</th>
+                    <th></th>
                   </tr>
                 </thead>
 
@@ -67,6 +86,23 @@ function Airplanes() {
                         <tr key={idAirplane}>
                           <td>{model}</td>
                           <td>{seats}</td>
+                          <td>
+                            <Button
+                              variant="success"
+                              title="Edit"
+                              onClick={() =>
+                                navigate(`/editAirplane/${idAirplane}`)
+                              }>
+                              <FontAwesomeIcon icon={faFilePen} />
+                            </Button>
+                            &nbsp;
+                            <Button
+                              variant="danger"
+                              title="Delete"
+                              onClick={() => onDelete(idAirplane)}>
+                              <FontAwesomeIcon icon={faTrash} />
+                            </Button>
+                          </td>
                         </tr>
                       )
                     );

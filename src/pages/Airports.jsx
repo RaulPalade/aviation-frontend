@@ -35,10 +35,10 @@ function Airports() {
         setStates(states);
         setSelectedState(states[0]);
         setAirports(airports);
+        getAirportByState(states[0]);
         setTimeout(() => {
           setLoading(false);
         }, 500);
-        getAirportByState(states[0]);
       } else {
         toast.error("Impossible to get airports");
       }
