@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Spinner from "../components/Spinner";
+import { toast } from "react-toastify";
 
 function AddFlight() {
   const [formData, setFormData] = useState({
@@ -33,53 +33,59 @@ function AddFlight() {
 
   useEffect(() => {
     const getAirports = async () => {
-      const airportsData = await axios.get("http://localhost:8080/airports");
-      const airports = airportsData.data;
+      try {
+        const airportsResponse = await axios.get(
+          "http://localhost:8080/airports"
+        );
+        const airportsData = airportsResponse.data;
 
-      if (airports !== null) {
-        setAirports(airports);
+        setAirports(airportsData);
         setLoading(false);
         setFormData((prevState) => ({
           ...prevState,
-          origin: airports[0].iatacode,
+          origin: airportsData[0].iatacode,
         }));
         setFormData((prevState) => ({
           ...prevState,
-          destination: airports[0].iatacode,
+          destination: airportsData[0].iatacode,
         }));
-      } else {
+      } catch (error) {
         toast.error("Impossible to get airports");
       }
     };
 
     const getAirlines = async () => {
-      const airlinesData = await axios.get("http://localhost:8080/airlines");
-      const airlines = airlinesData.data;
+      try {
+        const airlinesResponse = await axios.get(
+          "http://localhost:8080/airlines"
+        );
+        const airlinesData = airlinesResponse.data;
 
-      if (airlines !== null) {
-        setAirlines(airlines);
+        setAirlines(airlinesData);
         setFormData((prevState) => ({
           ...prevState,
-          airline: airlines[0].iatacode,
+          airline: airlinesData[0].iatacode,
         }));
         setLoading(false);
-      } else {
+      } catch (error) {
         toast.error("Impossible to get airlines");
       }
     };
 
     const getAirplanes = async () => {
-      const airplanesData = await axios.get("http://localhost:8080/airplanes");
-      const airplanes = airplanesData.data;
+      try {
+        const airplanesResponse = await axios.get(
+          "http://localhost:8080/airplanes"
+        );
+        const airplanesData = airplanesResponse.data;
 
-      if (airplanes !== null) {
-        setAirplanes(airplanes);
+        setAirplanes(airplanesData);
         setFormData((prevState) => ({
           ...prevState,
-          airplane: parseInt(airplanes[0].idAirplane),
+          airplane: parseInt(airplanesData[0].idAirplane),
         }));
         setLoading(false);
-      } else {
+      } catch (error) {
         toast.error("Impossible to get airlines");
       }
     };
@@ -91,19 +97,13 @@ function AddFlight() {
 
   const addFlight = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post(
-        "http://localhost:8080/flights",
-        formData
-      );
+      await axios.post("http://localhost:8080/flights", formData);
 
-      if (response.status === 200) {
-        toast.success("New flight added");
-        setTimeout(() => {
-          navigate("/flights");
-        }, 2000);
-      }
+      toast.success("New flight added");
+      setTimeout(() => {
+        navigate("/flights");
+      }, 2000);
     } catch (error) {
       toast.error("Impossible to add a new flight");
     }

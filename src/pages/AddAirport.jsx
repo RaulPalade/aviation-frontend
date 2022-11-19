@@ -19,19 +19,13 @@ function AddAirport() {
 
   const addAirport = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post(
-        "http://localhost:8080/airports",
-        formData
-      );
+      await axios.post("http://localhost:8080/airports", formData);
 
-      if (response.status === 200) {
-        toast.success("New airport added");
-        setTimeout(() => {
-          navigate("/airlines");
-        }, 2000);
-      }
+      toast.success("New airport added");
+      setTimeout(() => {
+        navigate("/airports");
+      }, 2000);
     } catch (error) {
       toast.error("Impossible to add a new airport");
     }

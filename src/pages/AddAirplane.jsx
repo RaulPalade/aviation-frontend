@@ -17,20 +17,14 @@ function AddAirplane() {
 
   const addAirplane = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post(
-        "http://localhost:8080/airplanes",
-        formData
-      );
-      if (response.status === 200) {
-        toast.success("New airplane added");
-        setTimeout(() => {
-          navigate("/airplanes");
-        }, 2000);
-      }
+      await axios.post("http://localhost:8080/airplanes", formData);
+
+      toast.success("New airplane added");
+      setTimeout(() => {
+        navigate("/airplanes");
+      }, 2000);
     } catch (error) {
-      console.log(error);
       toast.error("Impossible to add a new airplane");
     }
   };
