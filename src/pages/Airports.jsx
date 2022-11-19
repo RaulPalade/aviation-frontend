@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash, faFilePen } from "@fortawesome/free-solid-svg-icons";
 
 function Airports() {
-  // eslint-disable-next-line
   const [airports, setAirports] = useState(null);
   const [stateSelectedAirports, setStateSelectedAirports] = useState(null);
   const [states, setStates] = useState(null);
@@ -21,12 +20,14 @@ function Airports() {
 
   useEffect(() => {
     const getAirports = async () => {
-      const airporstData = await axios.get("http://localhost:8080/airports");
-      const airports = airporstData.data;
+      try {
+        const airporstResponse = await axios.get(
+          "http://localhost:8080/airports"
+        );
+        const airportsData = airporstResponse.data;
 
-      if (airports !== null) {
         let states = [];
-        airports.forEach((airport) => {
+        airportsData.forEach((airport) => {
           if (!states.includes(airport.state)) {
             states.push(airport.state);
           }
@@ -34,12 +35,12 @@ function Airports() {
 
         setStates(states);
         setSelectedState(states[0]);
-        setAirports(airports);
+        setAirports(airportsData);
         getAirportByState(states[0]);
         setTimeout(() => {
           setLoading(false);
         }, 500);
-      } else {
+      } catch (error) {
         toast.error("Impossible to get airports");
       }
     };
@@ -49,14 +50,14 @@ function Airports() {
 
   const getAirportByState = async (state) => {
     setSelectedState(state);
-    const airportsByStateData = await axios.get(
-      `http://localhost:8080/airports?state=${state}`
-    );
+    try {
+      const airportsByStateResponse = await axios.get(
+        `http://localhost:8080/airports?state=${state}`
+      );
 
-    const airportsByState = airportsByStateData.data;
-    if (airportsByState !== null) {
-      setStateSelectedAirports(airportsByState);
-    } else {
+      const airportsByStateData = airportsByStateResponse.data;
+      setStateSelectedAirports(airportsByStateData);
+    } catch (error) {
       toast.error("No airports found for this state");
     }
   };

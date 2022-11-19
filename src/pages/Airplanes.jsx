@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import Table from "react-bootstrap/Table";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Button from "react-bootstrap/Button";
+import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash, faFilePen } from "@fortawesome/free-solid-svg-icons";
 
@@ -19,23 +19,25 @@ function Airplanes() {
 
   useEffect(() => {
     const getAirplanes = async () => {
-      const airplanesData = await axios.get("http://localhost:8080/airplanes");
-      const airplanes = airplanesData.data;
+      try {
+        const airplanesReponse = await axios.get(
+          "http://localhost:8080/airplanes"
+        );
+        const airplanesData = airplanesReponse.data;
 
-      if (airplanes !== null) {
         let constructors = [];
-        airplanes.forEach((airplane) => {
+        airplanesData.forEach((airplane) => {
           if (!constructors.includes(airplane.constructor)) {
             constructors.push(airplane.constructor);
           }
         });
 
         setConstructors(constructors);
-        setAirplanes(airplanes);
+        setAirplanes(airplanesData);
         setTimeout(() => {
           setLoading(false);
         }, 500);
-      } else {
+      } catch (error) {
         toast.error("Impossible to get airplanes");
       }
     };

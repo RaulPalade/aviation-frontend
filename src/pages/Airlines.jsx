@@ -16,13 +16,15 @@ function Airlines() {
 
   useEffect(() => {
     const getAirlines = async () => {
-      const airlinesData = await axios.get("http://localhost:8080/airlines");
-      const airlines = airlinesData.data;
+      try {
+        const airlinesResponse = await axios.get(
+          "http://localhost:8080/airlines"
+        );
+        const airlinesData = airlinesResponse.data;
 
-      if (airlines !== null) {
-        setAirlines(airlines);
+        setAirlines(airlinesData);
         setLoading(false);
-      } else {
+      } catch (error) {
         toast.error("Impossible to get airline list");
       }
     };

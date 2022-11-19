@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Table from "react-bootstrap/Table";
+import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash, faFilePen } from "@fortawesome/free-solid-svg-icons";
 
@@ -17,38 +17,23 @@ function Flights() {
 
   const searchFlights = async (e) => {
     e.preventDefault();
-    const flightsData = await axios.get(
-      `http://localhost:8080/flights?origin=${from}&destination=${to}`
-    );
-    const flights = flightsData.data;
+    try {
+      const flightsResponse = await axios.get(
+        `http://localhost:8080/flights?origin=${from}&destination=${to}`
+      );
+      const flightsData = flightsResponse.data;
 
-    flights.forEach((flight) => {
-      let depTime = new Date(flight.departureTime);
-      let arrTime = new Date(flight.arrivalTime);
-      flight.departureTime = depTime.toLocaleString("IT");
-      flight.arrivalTime = arrTime.toLocaleString("IT");
-    });
+      flightsData.forEach((flight) => {
+        let depTime = new Date(flight.departureTime);
+        let arrTime = new Date(flight.arrivalTime);
+        flight.departureTime = depTime.toLocaleString("IT");
+        flight.arrivalTime = arrTime.toLocaleString("IT");
+      });
 
-    if (flights !== null && flights.length > 0) {
-      setFlights(flights);
-    } else if (flights !== null && flights.length === 0) {
+      setFlights(flightsData);
+    } catch (error) {
       toast.error("No flights found");
-      return;
     }
-  };
-
-  const onChangeDeparture = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      from: e.target.value,
-    }));
-  };
-
-  const onChangeDestination = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      to: e.target.value,
-    }));
   };
 
   const onDelete = async (flightNumber) => {
@@ -64,6 +49,20 @@ function Flights() {
     } catch (error) {
       toast.error("Impossible to delete");
     }
+  };
+
+  const onChangeDeparture = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      from: e.target.value,
+    }));
+  };
+
+  const onChangeDestination = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      to: e.target.value,
+    }));
   };
 
   return (
