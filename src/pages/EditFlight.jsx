@@ -267,7 +267,7 @@ function EditFlight() {
             type="text"
             value={flightNumber}
             onChange={onChangeFlightNumber}
-            required
+            disabled
           />
         </Form.Group>
 
@@ -361,7 +361,7 @@ function EditFlight() {
 
         <Form.Group className="mb-3">
           <Form.Label>Airline</Form.Label>
-          <Form.Control as="select" onChange={onChangeAirline}>
+          <Form.Control as="select" onChange={onChangeAirline} disabled>
             {airlines?.map((airline, index) => {
               return (
                 <option key={index} value={airline.iatacode}>

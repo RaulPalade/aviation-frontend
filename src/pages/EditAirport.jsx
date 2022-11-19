@@ -104,7 +104,7 @@ function EditAirport() {
             placeholder="Insert iata code"
             value={iatacode}
             onChange={onChangeIatacode}
-            required
+            disabled
           />
         </Form.Group>
 
