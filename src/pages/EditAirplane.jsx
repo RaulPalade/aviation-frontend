@@ -39,7 +39,10 @@ function EditAirplane() {
   const editAirplane = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/airplanes", formData);
+      await axios.put(
+        `http://localhost:8080/airplanes/${parseInt(params.idAirplane)}`,
+        formData
+      );
 
       toast.success("New airplane added");
       setTimeout(() => {
