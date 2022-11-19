@@ -62,7 +62,6 @@ function Airports() {
   };
 
   const onDelete = async (iatacode) => {
-    console.log(iatacode);
     try {
       await axios.delete(`http://localhost:8080/airports/${iatacode}`);
 
