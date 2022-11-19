@@ -14,6 +14,7 @@ import AddFlight from "./pages/AddFlight";
 import EditAirline from "./pages/EditAirline";
 import EditAirplane from "./pages/EditAirplane";
 import EditAirport from "./pages/EditAirport";
+import EditFlight from "./pages/EditFlight";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -37,6 +38,7 @@ function App() {
           <Route path="/editAirline/:iatacode" element={<EditAirline />} />
           <Route path="/editAirplane/:idAirplane" element={<EditAirplane />} />
           <Route path="/editAirport/:iatacode" element={<EditAirport />} />
+          <Route path="/editFlight/:flightNumber" element={<EditFlight />} />
         </Routes>
       </Router>
       <ToastContainer autoClose={3000} />

@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Table from "react-bootstrap/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash, faFilePen } from "@fortawesome/free-solid-svg-icons";
 
 function Flights() {
   const [flights, setFlights] = useState(null);
@@ -22,8 +22,6 @@ function Flights() {
     );
     const flights = flightsData.data;
 
-    console.log(flights);
-
     flights.forEach((flight) => {
       let depTime = new Date(flight.departureTime);
       let arrTime = new Date(flight.arrivalTime);
@@ -33,16 +31,11 @@ function Flights() {
 
     if (flights !== null && flights.length > 0) {
       setFlights(flights);
-      await delay(1000);
     } else if (flights !== null && flights.length === 0) {
       toast.error("No flights found");
       return;
     }
   };
-
-  function delay(time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
-  }
 
   const onChangeDeparture = (e) => {
     setFormData((prevState) => ({
@@ -56,6 +49,21 @@ function Flights() {
       ...prevState,
       to: e.target.value,
     }));
+  };
+
+  const onDelete = async (flightNumber) => {
+    try {
+      await axios.delete(`http://localhost:8080/flights/${flightNumber}`);
+
+      const updatedFlights = flights.filter(
+        (flight) => flight.flightNumber !== flightNumber
+      );
+
+      setFlights(updatedFlights);
+      toast.success("Flight deleted");
+    } catch (error) {
+      toast.error("Impossible to delete");
+    }
   };
 
   return (
@@ -100,6 +108,7 @@ function Flights() {
             <th>Arrival Time</th>
             <th>Airline</th>
             <th>Duration</th>
+            <th></th>
           </tr>
         </thead>
 
@@ -123,6 +132,21 @@ function Flights() {
                 <td>{arrivalTime}</td>
                 <td>{airline.name}</td>
                 <td>{duration}</td>
+                <td>
+                  <Button
+                    variant="success"
+                    title="Edit"
+                    onClick={() => navigate(`/editFlight/${flightNumber}`)}>
+                    <FontAwesomeIcon icon={faFilePen} />
+                  </Button>
+                  &nbsp;
+                  <Button
+                    variant="danger"
+                    title="Delete"
+                    onClick={() => onDelete(flightNumber)}>
+                    <FontAwesomeIcon icon={faTrash} />
+                  </Button>
+                </td>
               </tr>
             );
           })}
