@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { toast } from "react-toastify";
 
 function EditAirplane() {
   const [loading, setLoading] = useState(true);
@@ -21,11 +21,12 @@ function EditAirplane() {
   useEffect(() => {
     const getAirplane = async () => {
       try {
-        const airplaneData = await axios.get(
+        const airplaneResponse = await axios.get(
           `http://localhost:8080/airplanes/${parseInt(params.idAirplane)}`
         );
-        const airplane = airplaneData.data;
-        setFormData(airplane);
+        const airplaneData = airplaneResponse.data;
+
+        setFormData(airplaneData);
         setLoading(false);
       } catch (error) {
         toast.error("Impossible to get airplane");
@@ -37,20 +38,14 @@ function EditAirplane() {
 
   const editAirplane = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post(
-        "http://localhost:8080/airplanes",
-        formData
-      );
-      if (response.status === 200) {
-        toast.success("New airplane added");
-        setTimeout(() => {
-          navigate("/airplanes");
-        }, 1000);
-      }
+      await axios.post("http://localhost:8080/airplanes", formData);
+
+      toast.success("New airplane added");
+      setTimeout(() => {
+        navigate("/airplanes");
+      }, 1000);
     } catch (error) {
-      console.log(error);
       toast.error("Impossible to add a new airplane");
     }
   };

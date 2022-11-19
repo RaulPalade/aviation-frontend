@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Spinner from "../components/Spinner";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Spinner from "../components/Spinner";
 
 function EditAirline() {
   const [loading, setLoading] = useState(true);
@@ -22,12 +22,12 @@ function EditAirline() {
   useEffect(() => {
     const getAirline = async () => {
       try {
-        const airlineData = await axios.get(
+        const airlineResponse = await axios.get(
           `http://localhost:8080/airlines/${params.iatacode}`
         );
-        const airline = airlineData.data;
+        const airlineData = airlineResponse.data;
 
-        setFormData(airline);
+        setFormData(airlineData);
         setLoading(false);
       } catch (error) {
         toast.error("Impossible to get airline");
@@ -40,17 +40,15 @@ function EditAirline() {
   const updateAirline = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(
+      await axios.put(
         `http://localhost:8080/airlines/${params.iatacode}`,
         formData
       );
 
-      if (response.status === 200) {
-        toast.success("Airline updated");
-        setTimeout(() => {
-          navigate(`/airlines`);
-        }, 1000);
-      }
+      toast.success("Airline updated");
+      setTimeout(() => {
+        navigate(`/airlines`);
+      }, 1000);
     } catch (error) {
       toast.error("Impossible to update");
     }

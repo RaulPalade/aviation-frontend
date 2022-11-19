@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { toast } from "react-toastify";
 
 function EditAirport() {
   const [loading, setLoading] = useState(true);
@@ -23,12 +23,12 @@ function EditAirport() {
   useEffect(() => {
     const getAirport = async () => {
       try {
-        const airportData = await axios.get(
+        const airportResponse = await axios.get(
           `http://localhost:8080/airports/${params.iatacode}`
         );
-        const airport = airportData.data;
+        const airportData = airportResponse.data;
 
-        setFormData(airport);
+        setFormData(airportData);
         setLoading(false);
       } catch (error) {
         toast.error("Impossible to find this airport");
@@ -37,6 +37,23 @@ function EditAirport() {
 
     getAirport();
   }, [params.iatacode]);
+
+  const updateAirport = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(
+        `http://localhost:8080/airports/${params.iatacode}`,
+        formData
+      );
+
+      toast.success("Airport updated");
+      setTimeout(() => {
+        navigate(`/airports`);
+      }, 1000);
+    } catch (error) {
+      toast.error("Impossible to update");
+    }
+  };
 
   const onChangeIatacode = (e) => {
     setFormData((prevState) => ({
@@ -71,25 +88,6 @@ function EditAirport() {
       ...prevState,
       runways: e.target.value,
     }));
-  };
-
-  const updateAirport = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.put(
-        `http://localhost:8080/airports/${params.iatacode}`,
-        formData
-      );
-
-      if (response.status === 200) {
-        toast.success("Airport updated");
-        setTimeout(() => {
-          navigate(`/airports`);
-        }, 1000);
-      }
-    } catch (error) {
-      toast.error("Impossible to update");
-    }
   };
 
   if (loading) {

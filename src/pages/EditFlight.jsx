@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { toast } from "react-toastify";
 
 function EditFlight() {
   const [flightLoaded, setflightLoaded] = useState(false);
@@ -128,7 +128,6 @@ function EditFlight() {
             }));
           }
         } catch (e) {
-          console.log(e);
           toast.error("Impossible to get airports");
         }
       };
@@ -156,7 +155,6 @@ function EditFlight() {
           }));
           setLoading(false);
         } catch (e) {
-          console.log(e);
           toast.error("Impossible to get airlines");
         }
       };
@@ -182,7 +180,6 @@ function EditFlight() {
             airplane: airplanesData[0].idAirplane,
           }));
         } catch (e) {
-          console.log(e);
           toast.error("Impossible to get airplanes");
         }
       };
@@ -190,6 +187,23 @@ function EditFlight() {
     }
     // eslint-disable-next-line
   }, [params.flightNumber, flightLoaded]);
+
+  const updateFlight = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(
+        `http://localhost:8080/flights/${params.flightNumber}`,
+        formData
+      );
+
+      toast.success("Flight updated");
+      setTimeout(() => {
+        navigate(`/flights`);
+      }, 1000);
+    } catch (error) {
+      toast.error("Impossible to update");
+    }
+  };
 
   const onChangeFlightNumber = (e) => {
     setFormData((prevState) => ({
@@ -238,25 +252,6 @@ function EditFlight() {
       ...prevState,
       duration: e.target.value + ":00",
     }));
-  };
-
-  const updateFlight = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.put(
-        `http://localhost:8080/flights/${params.flightNumber}`,
-        formData
-      );
-
-      if (response.status === 200) {
-        toast.success("Flight updated");
-        setTimeout(() => {
-          navigate(`/flights`);
-        }, 1000);
-      }
-    } catch (error) {
-      toast.error("Impossible to update");
-    }
   };
 
   if (loading) {

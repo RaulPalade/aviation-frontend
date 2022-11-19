@@ -34,9 +34,7 @@ function Airplanes() {
 
         setConstructors(constructors);
         setAirplanes(airplanesData);
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
+        setLoading(false);
       } catch (error) {
         toast.error("Impossible to get airplanes");
       }
@@ -46,7 +44,6 @@ function Airplanes() {
   }, []);
 
   const onDelete = async (idAirplane) => {
-    console.log(idAirplane);
     try {
       await axios.delete(`http://localhost:8080/airplanes/${idAirplane}`);
 
