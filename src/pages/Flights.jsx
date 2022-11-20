@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Spinner from "../components/Spinner";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Table from "react-bootstrap/Table";
@@ -9,31 +10,78 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash, faFilePen } from "@fortawesome/free-solid-svg-icons";
 
 function Flights() {
+  const [loading, setLoading] = useState(true);
+  const [departureAirports, setDepartureAirports] = useState(null);
+  const [destinationAirports, setDestinationAirports] = useState(null);
   const [flights, setFlights] = useState(null);
-  const [formData, setFormData] = useState({ from: "", to: "" });
-  const { from, to } = formData;
+  const [filteredFlights, setFilteredFlights] = useState(null);
+  const [selectedDestination, setSelectedDestination] = useState(null);
+  const [toSelectDisabled, setToSelectDisabled] = useState(true);
 
   const navigate = useNavigate();
 
-  const searchFlights = async (e) => {
-    e.preventDefault();
-    try {
-      const flightsResponse = await axios.get(
-        `http://localhost:8080/flights?origin=${from}&destination=${to}`
-      );
-      const flightsData = flightsResponse.data;
+  useEffect(() => {
+    const getAirports = async () => {
+      try {
+        const airportsResponse = await axios.get(
+          "http://localhost:8080/airports"
+        );
+        const airportsData = airportsResponse.data;
 
-      flightsData.forEach((flight) => {
+        let cities = [];
+        airportsData.forEach((airport) => {
+          cities.push(airport.city);
+        });
+
+        setDepartureAirports(cities);
+        setLoading(false);
+      } catch (error) {
+        toast.error("Impossible to get airports");
+      }
+    };
+    getAirports();
+  }, []);
+
+  const searchFightsFrom = async (from) => {
+    setFilteredFlights(null);
+    try {
+      const flightFromResponse = await axios.get(
+        `http://localhost:8080/flights?origin=${from}`
+      );
+      const flightFromData = flightFromResponse.data;
+
+      let cities = [];
+      flightFromData.forEach((flight) => {
         let depTime = new Date(flight.departureTime);
         let arrTime = new Date(flight.arrivalTime);
         flight.departureTime = depTime.toLocaleString("IT");
         flight.arrivalTime = arrTime.toLocaleString("IT");
+        cities.push(flight.destination.city);
       });
 
-      setFlights(flightsData);
+      setFlights(flightFromData);
+      setDestinationAirports(cities);
+
+      if (cities.length > 0) {
+        setToSelectDisabled(false);
+      } else {
+        setToSelectDisabled(true);
+      }
     } catch (error) {
-      toast.error("No flights found");
+      toast.error("No flight found");
     }
+  };
+
+  const filterFlights = (e) => {
+    e.preventDefault();
+    let destinationFlights = [];
+
+    flights.forEach((flight) => {
+      if (flight.destination.city === selectedDestination) {
+        destinationFlights.push(flight);
+      }
+    });
+    setFilteredFlights(destinationFlights);
   };
 
   const onDelete = async (flightNumber) => {
@@ -51,44 +99,47 @@ function Flights() {
     }
   };
 
-  const onChangeDeparture = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      from: e.target.value,
-    }));
-  };
-
-  const onChangeDestination = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      to: e.target.value,
-    }));
-  };
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="pageContainer">
       <h3>Search Flights</h3>
-      <Form className="mt-5" onSubmit={searchFlights}>
+      <Form className="mt-5" onSubmit={filterFlights}>
         <Form.Group className="mb-3">
           <Form.Label>From</Form.Label>
           <Form.Control
-            type="text"
-            placeholder="Departure airport"
-            value={from}
-            onChange={onChangeDeparture}
-            required
-          />
+            as="select"
+            onChange={(event) => {
+              searchFightsFrom(event.target.value);
+            }}>
+            {departureAirports?.map((airport, index) => {
+              return (
+                <option key={index} value={airport}>
+                  {airport}
+                </option>
+              );
+            })}
+          </Form.Control>
         </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label>To</Form.Label>
           <Form.Control
-            type="text"
-            placeholder="Destination airport"
-            value={to}
-            onChange={onChangeDestination}
-            required
-          />
+            as="select"
+            onChange={(event) => {
+              setSelectedDestination(event.target.value);
+            }}
+            disabled={toSelectDisabled}>
+            {destinationAirports?.map((airport, index) => {
+              return (
+                <option key={index} value={airport}>
+                  {airport}
+                </option>
+              );
+            })}
+          </Form.Control>
         </Form.Group>
         <Button variant="primary" type="submit">
           Search
@@ -97,7 +148,7 @@ function Flights() {
 
       <br />
       <br />
-      <Table striped>
+      <Table striped hidden={filteredFlights === null}>
         <thead>
           <tr>
             <th>Flight Number</th>
@@ -112,7 +163,7 @@ function Flights() {
         </thead>
 
         <tbody>
-          {flights?.map((flight) => {
+          {filteredFlights?.map((flight) => {
             const {
               flightNumber,
               origin,
@@ -122,6 +173,7 @@ function Flights() {
               airline,
               duration,
             } = flight;
+
             return (
               <tr key={flightNumber}>
                 <td>{flightNumber}</td>
