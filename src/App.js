@@ -1,20 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Airlines from "./pages/Airlines";
-import Airplanes from "./pages/Airplanes";
-import Airports from "./pages/Airports";
-import Flights from "./pages/Flights";
 import NavbarApp from "./components/NavbarApp";
 
-import AddAirline from "./pages/AddAirline";
-import AddAirplane from "./pages/AddAirplane";
-import AddAirport from "./pages/AddAirport";
-import AddFlight from "./pages/AddFlight";
+import Airlines from "./pages/Airline/Airlines";
+import Airplanes from "./pages/Airplane/Airplanes";
+import Airports from "./pages/Airport/Airports";
+import Flights from "./pages/Flight/Flights";
 
-import EditAirline from "./pages/EditAirline";
-import EditAirplane from "./pages/EditAirplane";
-import EditAirport from "./pages/EditAirport";
-import EditFlight from "./pages/EditFlight";
+import AddAirline from "./pages/Airline/AddAirline";
+import AddAirplane from "./pages/Airplane/AddAirplane";
+import AddAirport from "./pages/Airport/AddAirport";
+import AddFlight from "./pages/Flight/AddFlight";
+
+import EditAirline from "./pages/Airline/EditAirline";
+import EditAirplane from "./pages/Airplane/EditAirplane";
+import EditAirport from "./pages/Airport/EditAirport";
+import EditFlight from "./pages/Flight/EditFlight";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
 
 function AddFlight() {

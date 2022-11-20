@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
-import Spinner from "../components/Spinner";
+import Spinner from "../../components/Spinner";
 import Button from "react-bootstrap/Button";
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
